@@ -1,1 +1,0 @@
-Welcome to my IoC-pipeline projects, this is a test file for studying basic command in Git. Thanks for reading!
