@@ -7,7 +7,6 @@ CREATE TABLE IF NOT EXISTS iocs (
   status     TEXT,
   tags       TEXT[],
   threat     TEXT,
-  raw        JSONB,
   first_seen TIMESTAMPTZ NOT NULL DEFAULT now(),
   last_seen  TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (value, ioc_type)

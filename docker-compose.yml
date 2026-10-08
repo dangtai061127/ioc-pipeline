@@ -1,3 +1,4 @@
+# Full compose file for steps 2, 5, 6. Replace your current docker-compose.yml with this.
 services:
   db:
     image: postgres:16-alpine
@@ -7,5 +8,37 @@ services:
       POSTGRES_DB: iocdb
     ports: ["127.0.0.1:5432:5432"]
     volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ioc -d iocdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+    ports: ["127.0.0.1:3000:3000"]
+    volumes: [grafana-data:/var/lib/grafana]
+    restart: unless-stopped
+
+  collector:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ABUSECH_KEY: ${ABUSECH_KEY}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: db
+      DB_PORT: "5432"
+      COLLECT_INTERVAL: "900"
+    restart: unless-stopped
+
 volumes:
   pgdata:
+  grafana-data:
